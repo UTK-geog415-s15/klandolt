@@ -1,0 +1,94 @@
+---
+title: "Homework 1"
+author: "Kyle Landolt"
+date: "January 28, 2015"
+output: html_document
+---
+# INSTRUCTIONS:
+Edit this file by replacing the instructions with text and code to anser the questions.
+I should be able to knit this file and reproduce the html, pdf, or word document.
+
+A block to load in the data: #edited to Kyle's file pathway
+```{r}
+rm(list=ls()) # Clean the workspace to be empty; alternative to clear objects in the workspace button
+arbuthnot <- read.csv("~/GEOG415/klandolt/homework1/data/arbuthnot.csv")
+```
+
+
+# Question 1
+This is a question about how the axes affects how we interpret plots.
+
+Create two plots of Male-Female Christenings, one in which the y-axis scale is set by default, and one in which the y-axis extends all the way to zero.  Yes, I know that was in the tutorial.  I want to see it here.
+
+Plot 1: Male-Female Christenings with default y-axis
+```{r ggplot, fig.width=4, fig.height=3, message=FALSE}
+library(ggplot2)
+ggplot(data=arbuthnot) + geom_line(aes(x=Year, y= Males/Females))+ ylab('Male:Female Sex Ratio')
+```
+
+Plot 2: Male-Female Christenings with modified y-axis
+```{r ggplot2, fig.width=4, fig.height=3, message=FALSE}
+library(ggplot2)
+ggplot(data=arbuthnot) + geom_line(aes(x=Year, y= Males/Females))+ ylab('Male:Female Sex Ratio') + scale_y_continuous(limits=c(0, 1.5))
+```
+
+
+ - Describe the visual appearance of the two plots.  Do they "feel" like they describe the same data? 
+```
+The plot with the default y-axis ranging from around 1 to 1.16 makes the relationship of our variables seem much more dynamic while the modified y-axis ranging from 0.0 to 1.5 makes the relationship seems more static as it stays near the same '1.0'value. They do not "feel" like they describe the same data.
+```
+ - Describe how you might be able to mislead readers by changing the scaling on graphs.
+```
+If I wanted graphs to look more steady throughout the x-axis, I could increase the scaling on the y-axis so the points and lines on the graph look more "squished". On the other hand, I would say that decreasing the scaling could bring out miniscule changes in the plot that may not be relevant.
+```
+ - Which plot seems more appropriate here?  Why?
+```
+The plot with the modified y-axis (0 to 1.5) seems to be more appropriate because the line is visually near the sex ratio of 1, the value that makes sense with the data given to us.
+```
+
+# Question 2
+This question is designed to give you some practice with ggplot as well as describing plots in words.
+
+Use ggplot to create a scatterplot that has Female christenings on the x-axis and Male christenings on the y-axis.  Draw a 45 degree line (using geom_abline) to show the line where Male and Female christenings are equal.  Use this figure to describe the relationship and distribution of Male and Female christenings.
+
+```{r ggplot3, fig.width=4, fig.height=3, message=FALSE}
+library(ggplot2)
+ggplot(data=arbuthnot) + geom_point(aes(x= Females, y = Males)) + ylab('Male Christenings') + xlab('Female Christenings') + geom_abline(intercept=0, slope=1)
+```
+
+The plot shows that there are consistently more male christenings than female christenings as the plotted line is above the abline. This is also seen in the Male:Female sex ratio plot at the line is consistently above 1.0, meaning that there are slightly more males born for every female born.
+
+# Question 3
+
+This is a question about population, sample, representativeness and generalizability.
+
+How do you think the christenings-based sample would compared to a births-based sample?  Similar?  Different?  Why?  Arbuthnot's data probably included most every christening in London during this period; they probably aren't any unreported christenings.  Is this fact important?  Why or why not?  Would a christenings based sample be appropriate now, in the 21st century?  (Hint, this last question is trickier than it might seem.  Think about what causes Male/Female Births, what causes people to christen their children, and any relations or not between these)
+
+```
+If males babies died just as consistently as female babies pre-christening, then the birth-based samples would show the same Male:Female ratio relationship. However, if the sexes died at different rates, then the ratio would be different. The fact that every christening is reported is important so that there is no sample selection bias. When observing modern christening based samples, the relationship will probably be similar to what was found previously only if 1) death rates were consistent, 2) sexes are christened equal, 3) there is no biological modification to which sex is born because the Male:Female ratio is driven by biological factors. However, other religions exist in the world that don't partake in christening, so I don't think that christening based samples would be appropriate. Also, gender selection is possible with artificial insemination and may skew the sex at birth ratio.
+```
+
+# Question 4
+What does "sex ratio at birth" mean?  How does it depend on biology, cuture and technology.  Consider the three cases of 1) late 17th century England, 2) 21st century US, and China under the [one-child policy](http://en.wikipedia.org/wiki/One-child_policy).
+
+```
+The sex ratio at birth is the ratio of how many males are born to every female (or vice versa). If the ratio of males:females is 1, then males and females are born at equal rates. If the ratio of males:females is 1.5, then for every 1.5 males born, 1 female is born (or 3 males for every 2 females). Arbuthnot's data shows that the mean value for the ratio of Males:Females christened (a substitute for 'at birth') is 1.071. However, 'at birth' might not exactly equate to 'christened'. The biological mechanisms that dictate fertlization and sex development can be alterned with modern medicine, so the 21st century US might be able to change the ratio. China's 'one-child policy' had many implications on birth rates. Although there are expections and some restrictions have been relaxed, the ratio of males to females born in mainland China has increased.
+```
+![China wiki birth rate](http://upload.wikimedia.org/wikipedia/commons/a/ae/Sex_ratio_at_birth_in_mainland_China.png)
+Sex ratio at birth in mainland China, males per 100 females, 1980–2010 (wiki)
+
+# Question 5
+The purpose of this quetion is to give you a little practice using standard deviation.
+
+a. The average height of young women ages 18-24 is 64.5 in.  The distribution of heights is approximately normal (Gaussian) with a standardard deviation of $\sigma=2.5$.  Complete this sentence: Approximately 95% of women have a height greater than "`r 64.5 - (2.5*2)`" in and less than "`r 64.5 + (2.5*2)`" in.
+
+# Question 6
+The purpose of this question is to help you understand the variance.
+
+The formula for sample variance $\sigma^2$ of a dataset is:
+$$\frac{\sum_{i=1}^N (x_i - \bar{x})^2}{N-1}$$
+Describe in words what each part of this equation is, and using the concept of "distance" describe what the sample variance measures.
+
+```
+The formula for sample variance is looping through the sample integers (x_i), summing the squared range of the (x_i) values by the samples mean bar{x}, then dividing those sums by how many sample integers were present minus 1 (n-1). The output of the sample variance equation describes the distance of how the values are spread out on the axis.
+```
