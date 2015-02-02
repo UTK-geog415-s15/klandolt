@@ -11,7 +11,7 @@ In the data folder there are two files:
 
 First, let's do some preliminary work: setting the workspace, loading libraries and loading data.
 ```{r set working directory}
-setwd('~/Dropbox/git_root/homework/homework2/')
+setwd("~/GEOG415/klandolt/homework2")
 ```
 
 
