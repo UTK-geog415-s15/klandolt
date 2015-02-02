@@ -21,21 +21,22 @@ This is a question about how the axes affects how we interpret plots.
 Create two plots of Male-Female Christenings, one in which the y-axis scale is set by default, and one in which the y-axis extends all the way to zero.  Yes, I know that was in the tutorial.  I want to see it here.
 
 Plot 1: Male-Female Christenings with default y-axis
-```{r ggplot, fig.width=4, fig.height=3, message=FALSE}
+```{r ggplot, message=FALSE}
 library(ggplot2)
-ggplot(data=arbuthnot) + geom_line(aes(x=Year, y= Males/Females))+ ylab('Male:Female Sex Ratio')
+ggplot(data=arbuthnot) + geom_line(aes(x=Year, y= Males, color='Males'))+ geom_line(aes(x=Year, y=Females, color='Females')) + ylab('Male-Female Christenings') + labs(color='Sex')
+
 ```
 
 Plot 2: Male-Female Christenings with modified y-axis
-```{r ggplot2, fig.width=4, fig.height=3, message=FALSE}
+```{r ggplot2, message=FALSE}
 library(ggplot2)
-ggplot(data=arbuthnot) + geom_line(aes(x=Year, y= Males/Females))+ ylab('Male:Female Sex Ratio') + scale_y_continuous(limits=c(0, 1.5))
+ggplot(data=arbuthnot) + geom_line(aes(x=Year, y= Males, color='Males')) + geom_line(aes(x=Year, y=Females, color='Females')) + ylab('Male-Female Christenings') + scale_y_continuous(limits=c(0, 10000)) + labs(color='Sex')
 ```
 
 
  - Describe the visual appearance of the two plots.  Do they "feel" like they describe the same data? 
 ```
-The plot with the default y-axis ranging from around 1 to 1.16 makes the relationship of our variables seem much more dynamic while the modified y-axis ranging from 0.0 to 1.5 makes the relationship seems more static as it stays near the same '1.0'value. They do not "feel" like they describe the same data.
+The plot with the default y-axis ranging from around 3000 to 8000 christenings makes the relationship of our variables seem much more dynamic while the modified y-axis ranging from 0 to 10000 makes the relationship seems more steady as it stays near the 5000 christening value. They do not "feel" like they describe the same data.
 ```
  - Describe how you might be able to mislead readers by changing the scaling on graphs.
 ```
@@ -43,7 +44,7 @@ If I wanted graphs to look more steady throughout the x-axis, I could increase t
 ```
  - Which plot seems more appropriate here?  Why?
 ```
-The plot with the modified y-axis (0 to 1.5) seems to be more appropriate because the line is visually near the sex ratio of 1, the value that makes sense with the data given to us.
+The plot with the default axis seems to be more appropriate because the lines are able to be viewed with the most detail to see the relationship of male and female christening numbers. If the extended axis is used, then the relationship between the lines is less visibile. However, and the fault that lies in using the default axis values, is that the more dynamic the lines are there might be misinterpretation to what they actually represent.
 ```
 
 # Question 2
