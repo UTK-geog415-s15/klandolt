@@ -45,12 +45,15 @@ ggplot(temp.data, aes(month, precip)) + geom_bar(stat='identity') + labs(y='Prec
 
  - Two scatterplots of tree ring width and precipitation, one with the current January, and one with the current August.  Use these to assess whether the relationship is approximately linear or not at all linear.
 
-```{r scatterplot for tree ring width and precipitation in January}
+```{r scat1 scatterplot for tree ring width and precipitation in January}
 
-
+rwi.precip <- left_join(precip, rwi, by='year')
+ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Jan))
 ```
 
-```{r scatterplot for tree ring width and precipitation in August}
+```{r scat2 scatterplot for tree ring width and precipitation in August}
+rwi.precip <- left_join(precip, rwi, by='year')
+ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Aug))
 
 ```
 
