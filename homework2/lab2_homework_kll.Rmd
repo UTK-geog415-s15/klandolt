@@ -67,7 +67,9 @@ rwi.precip <- left_join(rwi, tidy.precip,  by='year') %>% filter(year >= 1895)
 cor <- rwi.precip %>% group_by(month) %>% summarise(r=cor(rwi,precip))
 cor1 <- rwi.precip %>% group_by(month) %>% summarise(r=cor(rwi, precip, use='complete.obs'))
 corlag <- rwi.precip %>% group_by(month) %>% summarize(r = cor(rwi, lag(precip),use='complete.obs'))
-
+totcor <- left_join(cor, corlag, by='month')
+colnames(totcor) <- c("month", "cor.r", "corlag.r")
+ggplot(data=totcor) + geom_point(aes(x=month, y=cor.r, color='Correlation of current year')) + geom_point(aes(x=month, y=corlag.r, color='Correlation of lagged year'))
 ```
 
  
