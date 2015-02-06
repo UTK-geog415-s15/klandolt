@@ -1,7 +1,7 @@
 ---
-title: "lab2_homework"
-author: "Nicholas Nagle"
-date: "February 2, 2015"
+title: "Lab 2 Homework"
+author: "Kyle Landolt"
+date: "February 6, 2015"
 output: html_document
 ---
 
@@ -40,7 +40,7 @@ temp.data <- mutate(tidy.precip, date.str = paste(year, month, '01'))
 temp.data <- mutate(temp.data, date=as.Date(date.str, '%Y %B %d'))
 temp.data <- group_by(tidy.precip, month)
 temp.data <- summarize(temp.data, precip=mean(precip, na.rm=TRUE))
-ggplot(temp.data, aes(month, precip)) + geom_bar(stat='identity') + labs(y='Precipitation (in)', x='Month')
+ggplot(temp.data, aes(month, precip)) + geom_bar(stat='identity') + labs(y='Precipitation (in)', x='Month') + ggtitle('Monthly Precipitation') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15))
 ```
 
  - Two scatterplots of tree ring width and precipitation, one with the current January, and one with the current August.  Use these to assess whether the relationship is approximately linear or not at all linear.
@@ -48,12 +48,18 @@ ggplot(temp.data, aes(month, precip)) + geom_bar(stat='identity') + labs(y='Prec
 ```{r scat1 scatterplot for tree ring width and precipitation in January}
 
 rwi.precip <- left_join(precip, rwi, by='year')
-ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Jan))
+ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Jan)) + labs(x='Ring Width Index (RWI)', y= 'Month of January') + ggtitle('Scatterplot of Ring Width Index to the month of January') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15))
+
+# ggplot(data=rwi.precip, aes(x=rwi, y=Jan)) + geom_point(shape=5) + labs(x='Ring Width Index (RWI)', y= 'Month of January') + ggtitle('Scatterplot of Ring Width Index to the month of January') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15)) + geom_smooth(method=lm)
+
+
 ```
 
 ```{r scat2 scatterplot for tree ring width and precipitation in August}
 rwi.precip <- left_join(precip, rwi, by='year')
-ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Aug))
+ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Aug)) + labs(x='Ring Width Index (RWI)', y= 'Month of August') + ggtitle('Scatterplot of Ring Width Index to the month of August') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15))
+
+# ggplot(data=rwi.precip, aes(x=rwi, y=Aug)) + geom_point(shape=5) + labs(x='Ring Width Index (RWI)', y= 'Month of August') + ggtitle('Scatterplot of Ring Width Index to the month of August') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15)) + geom_smooth(method=lm)
 
 ```
 
@@ -70,7 +76,7 @@ cor1 <- rwi.precip %>% group_by(month) %>% summarise(r=cor(rwi, precip, use='com
 corlag <- rwi.precip %>% group_by(month) %>% summarize(r = cor(rwi, lag(precip),use='complete.obs'))
 totcor <- left_join(cor, corlag, by='month')
 colnames(totcor) <- c("month", "cor.r", "corlag.r")
-ggplot(data=totcor) + geom_point(aes(x=month, y=cor.r, color='current year')) + geom_point(aes(x=month, y=corlag.r, color='lagged year')) + labs(color='Correlation of') + geom_abline(intercept=0, slope=0) + labs(x='Month', y= 'Correlation value (r)')
+ggplot(data=totcor) + geom_point(aes(x=month, y=cor.r, color='current year')) + geom_point(aes(x=month, y=corlag.r, color='lagged year')) + labs(color='Correlation of:') + geom_abline(intercept=0, slope=0) + labs(x='Month', y= 'Correlation value (r)') + ggtitle('Correlation value \n of lagged year and current year to month') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15))
 
 ```
 
