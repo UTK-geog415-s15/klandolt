@@ -61,6 +61,17 @@ ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Aug))
  
 ```{r plot for correlation at every month between tree ring width and precipitation for both current and previous year}
 
+tidy.precip <- gather(data=precip, key=month, value=precip, -year) %>%
+  arrange(year,month) %>%
+  filter(precip >= 0)
+rwi.precip <- left_join(rwi, tidy.precip,  by='year') %>% filter(year >= 1895)
+cor <- rwi.precip %>% group_by(month) %>% summarise(r=cor(rwi,precip))
+cor1 <- rwi.precip %>% group_by(month) %>% summarise(r=cor(rwi, precip, use='complete.obs'))
+corlag <- rwi.precip %>% group_by(month) %>% summarize(r = cor(rwi, lag(precip),use='complete.obs'))
+totcor <- left_join(cor, corlag, by='month')
+colnames(totcor) <- c("month", "cor.r", "corlag.r")
+ggplot(data=totcor) + geom_point(aes(x=month, y=cor.r, color='current year')) + geom_point(aes(x=month, y=corlag.r, color='lagged year')) + labs(color='Correlation of') + geom_abline(intercept=0, slope=0)
+
 ```
 
  
