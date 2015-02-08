@@ -50,7 +50,10 @@ ggplot(temp.data, aes(month, precip)) + geom_bar(stat='identity') + labs(y='Prec
 rwi.precip <- left_join(precip, rwi, by='year')
 ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Jan)) + labs(x='Ring Width Index (RWI)', y= 'Month of January') + ggtitle('Scatterplot of Ring Width Index to the month of January') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15))
 
-# ggplot(data=rwi.precip, aes(x=rwi, y=Jan)) + geom_point(shape=5) + labs(x='Ring Width Index (RWI)', y= 'Month of January') + ggtitle('Scatterplot of Ring Width Index to the month of January') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15)) + geom_smooth(method=lm)
+
+#test ggplot with geom_smooth
+
+ggplot(data=rwi.precip, aes(x=rwi, y=Jan)) + geom_point(shape=5) + labs(x='Ring Width Index (RWI)', y= 'Month of January') + ggtitle('Scatterplot of Ring Width Index to the month of January') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15)) + geom_smooth(method=lm)
 
 
 ```
@@ -58,6 +61,8 @@ ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Jan)) + labs(x='Ring Width Ind
 ```{r scat2 scatterplot for tree ring width and precipitation in August}
 rwi.precip <- left_join(precip, rwi, by='year')
 ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Aug)) + labs(x='Ring Width Index (RWI)', y= 'Month of August') + ggtitle('Scatterplot of Ring Width Index to the month of August') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15))
+
+#test ggplot with geom_smooth
 
 # ggplot(data=rwi.precip, aes(x=rwi, y=Aug)) + geom_point(shape=5) + labs(x='Ring Width Index (RWI)', y= 'Month of August') + ggtitle('Scatterplot of Ring Width Index to the month of August') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15)) + geom_smooth(method=lm)
 
