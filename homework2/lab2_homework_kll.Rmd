@@ -149,7 +149,7 @@ Freshman year and sophomore year: r = 0.0
 Freshman year and senior year   : r = -0.5
 Two-by-four boards of lumber    : r = 0.95
 
-I hypothesize that students will maintain similar grade point averages from year to year. If that's true, then there will be no relationship between freshman and sophomore year because there hasn't enough spacing between college years to develop a relationship. There will be a slight negative correlation between freshman and senior year, however, as point spacing is further apart and there is more time to develop a relationship. The relationship of two-by-four board's weight and length should be highly correlated assuming consistent board production (species, water content, etc.)
+I hypothesize that students will maintain similar grade point averages from year to year. If that's true, then there will be no relationship between freshman and sophomore year because there hasn't enough spacing between college years (along the x axis) to develop a relationship. There will be a slight negative correlation between freshman and senior year, however, as point spacing is further apart and there is more distance to develop a relationship. The relationship of two-by-four board's weight and length should be highly correlated assuming consistent board production (species, water content, etc.)
 ```
 
 6. Studies find a negative correlation between hours spent watching television and scores on reading tests.  Does watching television make people less able to read?  Discuss briefly.
