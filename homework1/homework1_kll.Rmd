@@ -1,7 +1,7 @@
 ---
 title: "Homework 1"
 author: "Kyle Landolt"
-date: "January 28, 2015"
+date: "February 5th, 2015"
 output: html_document
 ---
 # INSTRUCTIONS:
@@ -16,6 +16,7 @@ arbuthnot <- read.csv("~/GEOG415/klandolt/homework1/data/arbuthnot.csv")
 
 
 # Question 1
+
 This is a question about how the axes affects how we interpret plots.
 
 Create two plots of Male-Female Christenings, one in which the y-axis scale is set by default, and one in which the y-axis extends all the way to zero.  Yes, I know that was in the tutorial.  I want to see it here.

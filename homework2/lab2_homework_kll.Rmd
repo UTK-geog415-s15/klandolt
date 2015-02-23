@@ -1,0 +1,159 @@
+---
+title: "Lab 2 Homework"
+author: "Kyle Landolt"
+date: "February 6, 2015"
+output: html_document
+---
+
+Setting directory, packages, and data.frame
+```{r set working directory}
+setwd("~/GEOG415/klandolt/homework2")
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(magrittr)
+precip <- read.csv('data/precip.csv')
+rwi <- read.csv('data/rwi.csv')
+```
+
+
+# Part 1. Analysis of El Malpais data
+
+What do the tree ring data tell us about monthly precipitation?
+
+Write up a short report (~ 2 paragraphs) answering the following questions:
+
+```
+El Malpais's mean monthly precipiation pattern peaks in August at 2.8 inches and is the least in May at 0.54 inches. The wetter months range from July through October and the drier months are from November to June (Figure 1). The correlation between tree ring width and monthly rainfall varies throughout the year. Genearlly, correlations are higher in January and steadily decrease to December (Figure 4). Lagged precipation also produces higher correlations for Jan, Feb, Mar, Jun, Aug, and Oct compared to non-lagged precipation correlation (Figure 4).
+
+The linearity of correlations is appropriate, although the correlations are not very high. The scatterplot of ring width index to precipitation of Janury has a regression line showing a linear relationship (Figure 2) while the scatterplot of August shows no linear relationship (Figure 3). If I were to choose a 12 month period that was highly correlated with tree ring width, I would choose the 12 months that gave the highest correlation between lagged and nonlagged precipitation. Figure 4 plots the correlation values for each month (although the gather function error might make it misleading), which appears that Jan - Jun lagged precip is generally higher and July - Dec unlagged precip is generally higher.
+
+```
+
+- Describe the monthly rainfall pattern.  
+- During what months is tree ring width correlated with rainfall?
+- How appropriate is (linear) correlation as a description of the relationship between tree ring width and monthly rainfall?
+- If you had to create a 12 month period that was correlated with tree ring width, what 12 months would those be?
+
+In answering these questions, I want to see:
+
+ - A bar chart or line graph showing average rainfall each month.
+
+```{r bar chart showing average rainfall each month}
+temp.data <- gather(data=precip, key=month, value=precip, -year)
+temp.data$precip[temp.data$precip<0]<- NA
+tidy.precip <- arrange(temp.data, year, month)
+temp.data <- mutate(tidy.precip, date.str = paste(year, month, '01'))
+temp.data <- mutate(temp.data, date=as.Date(date.str, '%Y %B %d'))
+temp.data <- group_by(tidy.precip, month)
+temp.data <- summarize(temp.data, precip=mean(precip, na.rm=TRUE))
+#
+#std <- std.error(precip, na.rm) %>% data.frame(.) %>% gather(data=., key=month, value=std, -year)
+
+
+
+ggplot(temp.data, aes(month, precip)) + geom_bar(stat='identity') + labs(y='Precipitation (in)', x='Month') + ggtitle('Figure 1. Monthly Precipitation') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15))
+```
+
+
+ - Two scatterplots of tree ring width and precipitation, one with the current January, and one with the current August.  Use these to assess whether the relationship is approximately linear or not at all linear.
+
+```{r scat1 scatterplot for tree ring width and precipitation in January}
+
+rwi.precip <- left_join(precip, rwi, by='year')
+#ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Jan)) + labs(x='Ring Width Index (RWI)', y= 'Month of January') + ggtitle('Scatterplot of Ring Width Index to the month of January') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15))
+
+
+#test ggplot with geom_smooth
+
+ggplot(data=rwi.precip, aes(x=rwi, y=Jan)) + geom_point(shape=5) + labs(x='Ring Width Index (RWI)', y= 'Month of January') + ggtitle('Figure 2. Scatterplot of Ring Width Index to the month of January') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15)) + geom_smooth(method=lm, se=FALSE)
+
+
+```
+
+```{r scat2 scatterplot for tree ring width and precipitation in August}
+rwi.precip <- left_join(precip, rwi, by='year')
+#ggplot(data=rwi.precip) + geom_point(aes(x=rwi, y=Aug)) + labs(x='Ring Width Index (RWI)', y= 'Month of August') + ggtitle('Scatterplot of Ring Width Index to the month of August') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15))
+
+#test ggplot with geom_smooth
+
+ggplot(data=rwi.precip, aes(x=rwi, y=Aug)) + geom_point(shape=5) + labs(x='Ring Width Index (RWI)', y= 'Month of August') + ggtitle('Figure 3. Scatterplot of Ring Width Index to the month of August') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15)) + geom_smooth(method=lm, se=FALSE)
+
+```
+
+ - Two (or one) plots showing the correlation at every month between tree ring width and precipitation, for both the current year and the previous year.  If you can get both current and previous (lagged) year on one plot, then great.
+ 
+```{r plot for correlation at every month between tree ring width and precipitation for both current and previous year}
+
+tidy.precip <- gather(data=precip, key=month, value=precip, -year) %>%
+  arrange(year,month) %>%
+  filter(precip >= 0)
+rwi.precip <- left_join(rwi, tidy.precip,  by='year') %>% filter(year >= 1895)
+cor <- rwi.precip %>% group_by(month) %>% summarise(r=cor(rwi,precip))
+cor1 <- rwi.precip %>% group_by(month) %>% summarise(r=cor(rwi, precip, use='complete.obs'))
+corlag <- rwi.precip %>% group_by(month) %>% summarize(r = cor(rwi, lag(precip),use='complete.obs'))
+totcor <- left_join(cor, corlag, by='month')
+colnames(totcor) <- c("month", "cor.r", "corlag.r")
+ggplot(data=totcor) + geom_point(aes(x=month, y=cor.r, color='current year')) + geom_point(aes(x=month, y=corlag.r, color='lagged year')) + labs(color='Correlation of:') + geom_abline(intercept=0, slope=0) + labs(x='Month', y= 'Correlation value (r)') + ggtitle('Figure 4. Correlation value \n of lagged year and current year to month') + theme(plot.title = element_text(lineheight=.8, face="bold", size=15))
+
+```
+
+ 
+ Make sure that your charts are properly labeled and are referred to in your answer.
+
+
+# Part 2: Getting the interpretation of correlation correct.
+
+
+1. In regard to the first part, which of the following is more correct and explain.
+  - A positive correlation between tree ring width and January precipitation might happen because January is often (but not always) wetter than the average month.
+  - A positive correlation between tree ring width and January precipitation might happen if dryer-than-average Januarys are associate with smaller-than-average tree ring widths.
+  
+```
+The latter (dryer-than-average Januarys) is more correct because January almost always has a lower precipation than other months like July and August. If January usually has a lower precipitation then we should usually see smaller-than-average tree ring widths compared to other months.
+```
+
+2. 
+  - Would the correlation between the age of a second-hand car and its price be positive or negative?  Why?  (Antiques are not included.)
+  - How would including antique cars change your response?
+
+```
+The correlation would be negative. As the age of the second-hand car increases, the price would decrease as it becomes more devalued. 
+```
+
+3. True or False, and explain: if the correlation coefficient is 0.90, then 90% of the points are highly correlated.
+
+```
+"False." - Dwight Schrute.
+
+False. The correlation coefficient doesn't explain the percentage of points that are correlated. The r only tells you how far away the sample data is from the linear line that represents the true data.
+
+```
+
+
+4. An economist is studying the relationship between household income and teenage pregnancy in the United States.  She has data for each of the 50 states, showing the average household income of families with teenagers, and the rates of pregnancy among teenage girls in that state.  The correlation is 0.4.  Does this give a fair estimate of the strength of the association between household income and teenage pregnancy?  Explain.
+
+```
+The correlation does not give a fair estimate of the association of household income and teenage pregnancy. There are many other variables that the economist isn't accounting for. Comparing household income of each family with teenagers to the whole states teenage pregnancy rate seems like off balanced data sets. Also, I think that education and finer spatial data for pregnancy rates should be included in the study to produce a stronger relationship.
+```
+
+5. Three data sets are collected and the correlation coefficient is computed in each case.  The variables in the datasets are:
+  - grade point average in freshman year and sophomore year in college.
+  - grade point average in freshman year and senior year in college.
+  - length and weight of two-by-four boards of lumber.
+  
+  Possible values for correlation coefficients are: -0.5,   0.0,   0.3,  0.6,  0.95.  Match the correlations with the data sets; two will be left over.  Explain your answers.
+
+```
+Freshman year and sophomore year: r = 0.0
+Freshman year and senior year   : r = -0.5
+Two-by-four boards of lumber    : r = 0.95
+
+I hypothesize that students will maintain similar grade point averages from year to year. If that's true, then there will be no relationship between freshman and sophomore year because there hasn't enough spacing between college years (along the x axis) to develop a relationship. There will be a slight negative correlation between freshman and senior year, however, as point spacing is further apart and there is more distance to develop a relationship. The relationship of two-by-four board's weight and length should be highly correlated assuming consistent board production (species, water content, etc.)
+```
+
+6. Studies find a negative correlation between hours spent watching television and scores on reading tests.  Does watching television make people less able to read?  Discuss briefly.
+
+```
+No because correlation doesn't not imply causation. There are other factors that need to be included to determine causation. Education level, for instance, should be looked at when using scores on reading tests.
+```
