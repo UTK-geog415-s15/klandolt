@@ -1,13 +1,82 @@
 ---
 title: "Lab 3 - Homework"
+author: "Kyle Landolt"
+date: "February 28, 2015""
 output: html_document
 ---
 
 1. For the first three diagnostic plots, describe wich assumptions they help to visually evaluate.
+
+```{r}
+#setwd('~/Dropbox/GEOG415/klandolt/homework3')
+setwd("C:/Users/Kyle/Dropbox/GEOG415/klandolt/homework3")
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(magrittr)
+
+precip <- read.csv('data/precip.csv')
+rwi <- read.csv('data/rwi.csv')
+precip.df <- precip.df %>% mutate(water_year = lead(year, 6))
+annual_precip <- precip.df %>% group_by(water_year) %>% 
+   summarize(precip=sum(precip)) %>%
+   filter(water_year>1895)
+rwi.precip.df <- left_join(rwi, annual_precip, by=c('year'='water_year'))
+modelexclude <- lm(rwi~precip, data=rwi.precip.df, na.action=na.exclude)
+rwi.precip.df$resid <- residuals(modelexclude)
+
+ggplot(data=rwi.precip.df) + geom_point(aes(x=precip, y=rwi))
+
+model <- lm(rwi~precip, data=rwi.precip.df)
+plot(model)
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+
 2. These data are time series data.  In general, data are correlated in time, and this would be a problem for simple linear regression.  Plot the regression residuals vs time, and visually assess whether there is evidence of temporal (serial) correlation.
+
+```{r}
+rwi.precip.df.sub <- subset(rwi.precip.df, precip>0)
+ggplot(data=rwi.precip.df.sub) + geom_line(aes(x=year, y=resid))
+```
+
+
+
+
 3. In the data folder is the dataset GalapagosData.txt.  The species data represents the number of species recorded from each of the Galapagos islands. A fundamental 'law' of island biogeography is that species diversity tends to follow a power law relationship with island area, i.e. $$\mbox{species} = \alpha\times{\mbox{area}^\beta}$$  
 This is not linear, but it suggests that the following regression might make sense: 
 $$\log(\mbox{species}) = a + \beta \times log(\mbox{area})$$
 $a$ is not quite $\alpha$, rather $a=\log(\alpha)$.  
 Fit this regression, and present a brief write-up that a) describes the results in words, and b) summarizes your conclusions from diagnostic model checking.
 
+```{r}
+GalapagosData <- read.table("C:/Users/Kyle/Dropbox/GEOG415/klandolt/homework3/data/GalapagosData.txt", header=TRUE, quote="\"")
+#GalapagosData <- read.table("~/Dropbox/GEOG415/klandolt/homework3/data/GalapagosData.txt", header=TRUE, quote="\"")
+gala <- GalapagosData
+ggplot(data=gala) + geom_point(aes(x=log(Areamiles), y=log(Nspecies)))
+test <- lm(log(Nspecies)~log(Areamiles), data=gala)
+plot(test)
+summary(test)
+
+
+```
+
+# mlogrwi <- rwi.precip.df %>% filter(rwi>0) %>% lm(log(rwi)~precip, data=.)
