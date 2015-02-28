@@ -1,15 +1,14 @@
 ---
 title: "Lab 3 - Homework"
 author: "Kyle Landolt"
-date: "February 28, 2015""
+date: "Saturday, February 28, 2015"
 output: html_document
 ---
 
 1. For the first three diagnostic plots, describe wich assumptions they help to visually evaluate.
 
-```{r}
-#setwd('~/Dropbox/GEOG415/klandolt/homework3')
-setwd("C:/Users/Kyle/Dropbox/GEOG415/klandolt/homework3")
+```{r set libraries, message=FALSE}
+setwd("C:/Users/Kyle/Documents/GEOG415/klandolt/homework3")
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -17,6 +16,7 @@ library(magrittr)
 
 precip <- read.csv('data/precip.csv')
 rwi <- read.csv('data/rwi.csv')
+precip.df <- precip %>% gather(key=month, value=precip, -year) %>% arrange(year, month)
 precip.df <- precip.df %>% mutate(water_year = lead(year, 6))
 annual_precip <- precip.df %>% group_by(water_year) %>% 
    summarize(precip=sum(precip)) %>%
@@ -28,21 +28,23 @@ rwi.precip.df$resid <- residuals(modelexclude)
 ggplot(data=rwi.precip.df) + geom_point(aes(x=precip, y=rwi))
 
 model <- lm(rwi~precip, data=rwi.precip.df)
-plot(model)
-```
-
-
-```{r}
 
 ```
 
 
 ```{r}
+plot(model, which=1)
+```
+
+
+```{r}
+plot(model, which=2)
 
 ```
 
 
 ```{r}
+plot(model, which=3)
 
 ```
 
