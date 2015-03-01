@@ -7,6 +7,9 @@ output: html_document
 
 1. For the first three diagnostic plots, describe wich assumptions they help to visually evaluate.
 
+```
+The first step to view the three diagnostic plots is to import libraries and format data. I initally plotted "water year precipitation to rwi" to compare the diagnostic plots to.
+```
 ```{r set libraries, message=FALSE}
 setwd("C:/Users/Kyle/Documents/GEOG415/klandolt/homework3")
 library(ggplot2)
@@ -24,43 +27,53 @@ annual_precip <- precip.df %>% group_by(water_year) %>%
 rwi.precip.df <- left_join(rwi, annual_precip, by=c('year'='water_year'))
 modelexclude <- lm(rwi~precip, data=rwi.precip.df, na.action=na.exclude)
 rwi.precip.df$resid <- residuals(modelexclude)
-
-ggplot(data=rwi.precip.df) + geom_point(aes(x=precip, y=rwi))
-
 model <- lm(rwi~precip, data=rwi.precip.df)
+ggplot(data=rwi.precip.df) + geom_point(aes(x=precip, y=rwi)) + ylim(c(0, 2)) + ggtitle("Scatterplot of Precipitation to RWI") + theme(plot.title=element_text(lineheight=4, face="bold", size=30))
+
 
 ```
 
 
-```{r}
+```{r Residuals vs Fitted}
 plot(model, which=1)
 ```
+```
+Diagnostic Plot 1. Residuals vs Fitted
 
+The Residuals vs Fitted plot places the residual values (distance from the point to the regression line) on the y axis and makes the regression line (the fitted values) into the x axis. The mean residual distance is then expressed through a solid red line. You can visually see how the residuals were expressed above or below the regression line and how the tails of the regression line have lower residual values than the middle of the regression line.
+```
 
-```{r}
+```{r Normal Q-Q}
 plot(model, which=2)
 
 ```
+```
+Diagnostic Plot 2. Normal Q-Q
 
-
-```{r}
+The Normal Q-Q plot is fitting the normal curve to residuals. If the plotted points fall along the dotted line of y=x, then the relationship are the distributions are normal. If the plotted points skew off the y=x line, then the distributions of the points aren't normal.
+```
+```{r Scale-Location}
 plot(model, which=3)
 
 ```
+```
+Diagnostic Plot 3. Scale-Location
 
-
-
-
+The Scale-Location plot takes the sqrt of the standardized residuals on the y-axis and the regression line dimension on the x-axis. The mean values are represented by a solid red line. The line shows the increasing heteroschedasiticy of the data as the fitted values increase, then slopes off.
+```
 
 
 2. These data are time series data.  In general, data are correlated in time, and this would be a problem for simple linear regression.  Plot the regression residuals vs time, and visually assess whether there is evidence of temporal (serial) correlation.
 
 ```{r}
 rwi.precip.df.sub <- subset(rwi.precip.df, precip>0)
-ggplot(data=rwi.precip.df.sub) + geom_line(aes(x=year, y=resid))
+ggplot(data=rwi.precip.df.sub) + geom_line(aes(x=year, y=resid)) + ggtitle("Residuals plotted along time") + theme(plot.title=element_text(lineheight=4, face="bold", size=30))
+timeandresid <-  lm(resid~year, data=rwi.precip.df)
 ```
 
-
+```
+There are a few spikes and dips in the residuals of the data over time. However, there is no relationship between residuals and time which is a good sign for the reliability of the data.
+```
 
 
 3. In the data folder is the dataset GalapagosData.txt.  The species data represents the number of species recorded from each of the Galapagos islands. A fundamental 'law' of island biogeography is that species diversity tends to follow a power law relationship with island area, i.e. $$\mbox{species} = \alpha\times{\mbox{area}^\beta}$$  
@@ -74,11 +87,17 @@ GalapagosData <- read.table("C:/Users/Kyle/Dropbox/GEOG415/klandolt/homework3/da
 #GalapagosData <- read.table("~/Dropbox/GEOG415/klandolt/homework3/data/GalapagosData.txt", header=TRUE, quote="\"")
 gala <- GalapagosData
 ggplot(data=gala) + geom_point(aes(x=log(Areamiles), y=log(Nspecies)))
-test <- lm(log(Nspecies)~log(Areamiles), data=gala)
-plot(test)
-summary(test)
-
 
 ```
+```
+After fitting the log of Nspecies to the log of Areamiles, a linear relationship was formed. Without logging either factor, the relationship isn't linear. This is further proving that the species diversity of islands tends to follow a power law relationship with the island area. Our linear relationship had a regression line "y=0.33x + 3.35". 
+```
+```{r}
+galamodel <- lm(log(Nspecies)~log(Areamiles), data=gala)
+plot(galamodel)
+summary(galamodel)
+```
+```
+The diagnostic plots of linear model show that there may be some slight correlated errors, but overall it seems to be linear. The QQ plot also showss the residual values above and below the y=x line, but it looks normal. The Scale-Location plot shows high variability near the start of the linear model but decreasing variability as the fitted values increase.
+```
 
-# mlogrwi <- rwi.precip.df %>% filter(rwi>0) %>% lm(log(rwi)~precip, data=.)
