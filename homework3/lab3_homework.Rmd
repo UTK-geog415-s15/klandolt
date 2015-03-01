@@ -28,7 +28,7 @@ rwi.precip.df <- left_join(rwi, annual_precip, by=c('year'='water_year'))
 modelexclude <- lm(rwi~precip, data=rwi.precip.df, na.action=na.exclude)
 rwi.precip.df$resid <- residuals(modelexclude)
 model <- lm(rwi~precip, data=rwi.precip.df)
-ggplot(data=rwi.precip.df) + geom_point(aes(x=precip, y=rwi)) + ylim(c(0, 2)) + ggtitle("Scatterplot of Precipitation to RWI") + theme(plot.title=element_text(lineheight=4, face="bold", size=30))
+ggplot(data=rwi.precip.df) + geom_point(aes(x=precip, y=rwi)) + ylim(c(0, 2)) + ggtitle("Scatterplot of Precipitation to RWI") + theme(plot.title=element_text(lineheight=4, face="bold", size=20))
 
 
 ```
@@ -67,7 +67,7 @@ The Scale-Location plot takes the sqrt of the standardized residuals on the y-ax
 
 ```{r}
 rwi.precip.df.sub <- subset(rwi.precip.df, precip>0)
-ggplot(data=rwi.precip.df.sub) + geom_line(aes(x=year, y=resid)) + ggtitle("Residuals plotted along time") + theme(plot.title=element_text(lineheight=4, face="bold", size=30))
+ggplot(data=rwi.precip.df.sub) + geom_line(aes(x=year, y=resid)) + ggtitle("Residuals plotted along time") + theme(plot.title=element_text(lineheight=4, face="bold", size=20))
 timeandresid <-  lm(resid~year, data=rwi.precip.df)
 ```
 
@@ -86,7 +86,7 @@ Fit this regression, and present a brief write-up that a) describes the results 
 GalapagosData <- read.table("C:/Users/Kyle/Dropbox/GEOG415/klandolt/homework3/data/GalapagosData.txt", header=TRUE, quote="\"")
 #GalapagosData <- read.table("~/Dropbox/GEOG415/klandolt/homework3/data/GalapagosData.txt", header=TRUE, quote="\"")
 gala <- GalapagosData
-ggplot(data=gala) + geom_point(aes(x=log(Areamiles), y=log(Nspecies)))
+ggplot(data=gala) + geom_point(aes(x=log(Areamiles), y=log(Nspecies))) + ggtitle("Log(Nspecies) to the log(Areamiles)") + theme(plot.title=element_text(lineheight=4, face="bold", size=20))
 
 ```
 ```
