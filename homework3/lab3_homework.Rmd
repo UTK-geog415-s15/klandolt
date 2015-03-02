@@ -69,10 +69,11 @@ The Scale-Location plot takes the sqrt of the standardized residuals on the y-ax
 rwi.precip.df.sub <- subset(rwi.precip.df, precip>0)
 ggplot(data=rwi.precip.df.sub) + geom_line(aes(x=year, y=resid)) + ggtitle("Residuals plotted along time") + theme(plot.title=element_text(lineheight=4, face="bold", size=20))
 timeandresid <-  lm(resid~year, data=rwi.precip.df)
+summary(timeandresid)
 ```
 
 ```
-There are a few spikes and dips in the residuals of the data over time. However, there is no relationship between residuals and time which is a good sign for the reliability of the data.
+There are a few spikes and dips in the residuals of the data over time. However, there is no relationship between residuals and time which is a good sign for the reliability of the data. This is shown through the slope of 0.0135 and a "t-value" of less than 2 plus a "p-value" of greater than 0.05.
 ```
 
 
