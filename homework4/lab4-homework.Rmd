@@ -1,19 +1,63 @@
 ---
-title: "Untitled"
-author: "Nicholas Nagle"
+title: "Homework 4"
+author: "Kyle Landolt"
 date: "March 7, 2015"
-output: pdf_document
+output: html_document
 ---
+
+```{r}
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(magrittr)
+setwd("~/Dropbox/GEOG415/klandolt/homework4")
+```
+
 
 1. Two-sample T-test> ACT scores
 Consider the hypothesis that college-bound males and females have the same average ACT scores.
 ```{r}
 act <- read.table('ACT_scores.txt', header=TRUE)
-
+act <- gather(act, key=sex, value=score)
 ```
  a. Write out the hypothesis that is tested by a two-sample t-test in this case.
- b. Using boxplots and summary statistics, report on the suitability of these data for a two-sample t-test to evaluate the hypothesis that seeding influences rainfall.
- c. Conduct a t-test to evaluate the hypothesis that seeding influences rainfall and report the result.
+ 
+```
+
+Null Hypothesis: 
+There will no difference in the mean of the male ACT scores and the mean of the female ACT score. In otherwords, the difference of the means will equal 0.
+
+Alternate Hypothesis:
+The will be a difference in the mean of the male ACT scores and the mean of the female ACT score. The difference of the means will not be equal 0.
+```
+ 
+ b. Using boxplots and summary statistics, report on the suitability of these data for a two-sample t-test to evaluate the hypothesis that sex influences score.
+ 
+```{r}
+ggplot(act) + geom_boxplot(aes(x=sex, y=score))
+
+```
+
+
+
+```{r}
+summary(aov(score~sex, data=act))
+
+```
+
+
+```{r}
+act %>% group_by(sex) %>% summarize(m=mean(score), s=sd(score), n = n())
+
+```
+
+
+
+ c. Conduct a t-test to evaluate the hypothesis that sex influences score and report the result.
+```{r}
+t.test(score~sex, data=act)
+```
+
 
 2.  Two-sample t-tests.  Cloud Seeding.
 
@@ -21,7 +65,6 @@ These data were collected in Southern Florida between 1968 and 1972 to test a hy
 ```{r}
 library(Sleuth3)
 data(case0301)
-head(case0301)
 # Here are two ways to calculate a boxplot
 # boxplot(Rainfall~Treatment, data=case0301)
 # library(ggplot2)
@@ -34,10 +77,64 @@ head(case0301)
 ```
 
  a. Using boxplots and summary statistics, report on the suitability of these data for a two-sample t-test to evaluate the hypothesis that seeding influences rainfall.
+```{r}
+ggplot(data=case0301) + geom_boxplot(aes(x=Treatment, y=Rainfall))
+
+
+
+```
+
+
+```{r}
+summary(aov(Rainfall~Treatment, data=case0301))
+
+```
+
+```{r}
+case0301 %>% group_by(Treatment) %>% summarize(m=mean(Rainfall), sd=sd(Rainfall), n=n() )
+
+```
+
+
+
+ 
  b. Conduct a t-test to evaluate the hypothesis that seeding influences rainfall and report the result.
+
+```{r}
+t.test(Rainfall~Treatment, data = case0301)
+```
+
+
  c. Repeat a. and b. using a log-transform of the rainfall measurement.  Which analysis do you prefer and why?
+ 
+```{r}
+ggplot(data=case0301) + geom_boxplot(aes(x=Treatment, y=log(Rainfall)))
+
+case0301 %>% group_by(Treatment) %>% summarize(m=mean(log(Rainfall)), sd=sd(Rainfall), n=n() )
+
+summary(aov(log(Rainfall)~Treatment, data=case0301))
+
+t.test(log(Rainfall)~Treatment, data = case0301)
+```
+
+
+```
+
+```
+
  d. Why is it important that the pilots were unaware of whether they were seeding or not?
+ 
+```
+
+```
+
+ 
  e. Unfortunately, we do not have the date of the weather event.  Why would it be helpful to have  this information?
+ 
+```
+
+```
+
 
 2. ANOVA
 
@@ -53,6 +150,11 @@ data <- data.frame(temp=temp, season=season)
 
 For the air temperature data, conduct an ANOVA and use the F-statistic to test the hypothesis that air temperature varies by season.
 
+```{r}
+summary(aov(temp~season, data=data))
+```
+
+
 3.  Spock Conspiracy Trial.
 
 This is another classic dataset. Dr. Benjamin Spock was a pediatrician who wrote a very popular book in 1948.  In 1968, Dr Spock was accused of conspiring to violate the Selective Services Act by helping young men to medically avoid the military draft during the Vietnam War.  His defence challeneged the case on the grounds that the jury did not contain a single woman, and therefore could not be random.
@@ -64,9 +166,38 @@ data(case0502)
 ```
 
  a. Qualitatively describe these data using boxplots and summary statistics.
+ 
+```{r}
+ggplot(case0502) + geom_boxplot(aes(x=Judge, y = Percent))
+case0502 %>% group_by(Judge) %>% summarize(m=mean(Percent), sd=sd(Percent), n = n())
+```
+
+
  b. Using an ANOVA, test the hypothesis that all of the judges have the same jury compositions on average and report your results.
+ 
+```{r}
+summary(aov(Percent~Judge, data=case0502))
+```
+
+ 
  c. Grouping together Judges A-F, perform a two-sample t-test to test the hypothesis that Spock's judge consistently chooses juries with lower than expected women.
+ 
+```{r}
+case0502$Judge2 <- ifelse(case0502$Judge, "Spocks", "Other")
+```
+
+
+ 
  d. Use another ANOVA to evaluate whether or not it was suitable to group together the other 6 judges.
+ 
+```{r}
+
+```
+
+ 
  e. How should your interpretation of the results in part (c) change if you rejected the hypothesis the other six judges were not all statistically the same?
  
  
+```{r}
+
+```
