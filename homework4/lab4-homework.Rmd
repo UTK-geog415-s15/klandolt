@@ -183,7 +183,9 @@ summary(aov(Percent~Judge, data=case0502))
  c. Grouping together Judges A-F, perform a two-sample t-test to test the hypothesis that Spock's judge consistently chooses juries with lower than expected women.
  
 ```{r}
-case0502$Judge2 <- ifelse(case0502$Judge, "Spocks", "Other")
+
+case0502$Judge2 <- ifelse(case0502$Judge == "Spock's", "Spock's", "Other")
+
 ```
 
 
