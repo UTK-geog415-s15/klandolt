@@ -85,6 +85,12 @@ Nonetheless, we'll fit a linear regression to the data.
 model <- lm(rwi~precip, data=rwi.precip.df)
 # Print out a summary
 summary(model)
+
+#Dr.Nagles additional code
+# keep missing values around, but don't omit them
+#      modelexclude <- lm(rwi~precip, data=rwi.precip.df, na.action=na.exclude)
+#       rwi.precip.df$resid <- residuals(modelexclude)
+
 ```
 
 We see that each increase in the ring width corresponds to a `r coef(model)[2]`  in increase in annual precipitation.  If we wanted to create 95% confidence intervals, we would have `r coef(model)[2]` plus/minus 2 times `r summary(model)$coefficients['precip', 'Std. Error']`, or [`r coef(model)[2] + c(-summary(model)$coefficients['precip', 'Std. Error'], summary(model)$coefficients['precip', 'Std. Error'])`].  This interval does not include zero.  Thus, a slope of zero (no relationship between precipitation and ring width) is not consistent with the data.  Admittedly, this isn't that interesting.  We could have speculated that a zero slope was not consistent with the data just by looking at the scatterplot.

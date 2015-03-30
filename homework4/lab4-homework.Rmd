@@ -1,19 +1,67 @@
 ---
-title: "Untitled"
-author: "Nicholas Nagle"
+title: "Homework 4"
+author: "Kyle Landolt"
 date: "March 7, 2015"
-output: pdf_document
+output: html_document
 ---
+
+```{r}
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(magrittr)
+setwd("~/Dropbox/GEOG415/klandolt/homework4")
+```
+
 
 1. Two-sample T-test> ACT scores
 Consider the hypothesis that college-bound males and females have the same average ACT scores.
 ```{r}
 act <- read.table('ACT_scores.txt', header=TRUE)
-
+act <- gather(act, key=sex, value=score)
 ```
  a. Write out the hypothesis that is tested by a two-sample t-test in this case.
- b. Using boxplots and summary statistics, report on the suitability of these data for a two-sample t-test to evaluate the hypothesis that seeding influences rainfall.
- c. Conduct a t-test to evaluate the hypothesis that seeding influences rainfall and report the result.
+ 
+<b><u>Null Hypothesis:</u> 
+There will no difference in the mean of the male ACT scores and the mean of the female ACT score. In otherwords, the difference of the means will equal 0.
+
+<u>Alternate Hypothesis:</u>
+The will be a difference in the mean of the male ACT scores and the mean of the female ACT score. The difference of the means will not be equal to 0.
+</b>
+ 
+ b. Using boxplots and summary statistics, report on the suitability of these data for a two-sample t-test to evaluate the hypothesis that sex influences score.
+ 
+```{r}
+ggplot(act) + geom_boxplot(aes(x=sex, y=score))
+
+```
+
+<b>The boxplots appear to show that the distribution of male scores and female scores are normal. Normally distributed data is required for proper two-sample t-testing.</b>
+
+
+```{r}
+summary(aov(score~sex, data=act))
+
+```
+
+<b>The summary statistics for the ANOVA return a 'F-statistic' of 0.025 and a 'p-value' of 0.875. The F-statistic is notably low which may show that there is no signficicant variance between the two means.</b>
+
+
+```{r}
+act %>% group_by(sex) %>% summarize(m=mean(score), s=sd(score), n = n())
+
+```
+
+<b>Furthermore, the manually produced mean, standard deviation, and n-value is produced. This shows that male and female test scores have similar means, both around 20, and similar standard deviations, both around 7. </b>
+
+
+ c. Conduct a t-test to evaluate the hypothesis that sex influences score and report the result.
+```{r}
+t.test(score~sex, data=act)
+```
+
+<b>The t-test shows that sex does not determine the scores of the ACT test. The confidence interval contains 0. We can't reject our null hypothesis which states that the difference is means is equal to 0. If there was significant difference, then the 95 percent CI wouldn't contain 0.</b>
+
 
 2.  Two-sample t-tests.  Cloud Seeding.
 
@@ -21,23 +69,70 @@ These data were collected in Southern Florida between 1968 and 1972 to test a hy
 ```{r}
 library(Sleuth3)
 data(case0301)
-head(case0301)
-# Here are two ways to calculate a boxplot
-# boxplot(Rainfall~Treatment, data=case0301)
-# library(ggplot2)
-# ggplot(data=case0301) + geom_boxplot(aes(x=Treatment, y=Rainfall))
-
-# Here are two ways to calculate some summary statistics
-# tapply(X=case0301$Rainfall, INDEX=case0301$Treatment, FUN=mean) # Calculate mean, repeat for sd
-# library(dplyr)
-# case0301 %>% group_by(Treatment) %>% summarize(m=mean(Rainfall), sd=sd(Rainfall), n=n() )
 ```
 
  a. Using boxplots and summary statistics, report on the suitability of these data for a two-sample t-test to evaluate the hypothesis that seeding influences rainfall.
+```{r}
+ggplot(data=case0301) + geom_boxplot(aes(x=Treatment, y=Rainfall))
+```
+
+<b>The boxplots of Treatment to Rainfall show that there may be non-gaussian distributions of the data. There are skewed values for rainfall exceeding above 2000 which may prove to not be very reliable for two-sample t-tests.</b>
+
+```{r}
+summary(aov(Rainfall~Treatment, data=case0301))
+```
+
+<b>The summary statistics for the ANOVA testing whether treatment has an affect on rainfall appear to be insignificant (F-value: 3.993, Pr(>F): 0.0511). This informs us that the ANOVA doesn't show a signfinicant difference between rainfall events and treatments.</b>
+
+```{r}
+case0301 %>% group_by(Treatment) %>% summarize(m=mean(Rainfall), sd=sd(Rainfall), n=n() )
+```
+
+<b>The means and standard deviations of the rainfall to treatments vary wildly. Seeded treatments have a extremely large standard deviation which may be a component of the non-gaussian distrubution.</b>
+
  b. Conduct a t-test to evaluate the hypothesis that seeding influences rainfall and report the result.
+
+```{r}
+t.test(Rainfall~Treatment, data = case0301)
+```
+
+<b>The t-test to evaluate that seeding influences rainfall appears to be insignficant because the 95% CI contains 0 and the p-value is greater than 0.05. This means that two treatments, seeded and unseeded, have no significant differences.</b>
+
  c. Repeat a. and b. using a log-transform of the rainfall measurement.  Which analysis do you prefer and why?
+ 
+```{r}
+ggplot(data=case0301) + geom_boxplot(aes(x=Treatment, y=log(Rainfall)))
+```
+<b> Here the boxplots of the Treatments to log(Rainfall) appear to distrubute the data much more normally than using non-logged Rainfall.</b>
+
+```{r}
+summary(aov(log(Rainfall)~Treatment, data=case0301))
+```
+<b>The summary statistics of the ANOVA testing the variance of treatments to logged Rainfall appear to be significant. The F-value is larger than the previous test and the p-value is less than 0.05.</b>
+
+```{r}
+case0301 %>% group_by(Treatment) %>% summarize(m=mean(log(Rainfall)), sd=sd(log(Rainfall)), n=n() )
+```
+<b> The mean and standard deviation of the log(Rainfall) to treatments appears to be more uniform and consistent as well. </b>
+
+```{r}
+t.test(log(Rainfall)~Treatment, data = case0301)
+
+```
+<b> The t test evaluating if the treatments have an affect on the log(Rainfall) appear to be signficiant in that we reject the null and accept the alternate hypothesis stating that there is a difference among means. The 95% CI doesn't contain 0 which would mean that there wouldn't be a significant difference in the means. </b>
+
+<b> Ultimately, I prefer the log(Rainfall) to Treatment test because logging rainfall distributes the data much more normally that testing with the unlogged rainfall data. Normal distrubution are required for t testing evaluating the indedependent and dependent factor relationships.</b>
+
+
  d. Why is it important that the pilots were unaware of whether they were seeding or not?
+ 
+<b> It is important that the pilots were unaware of whether they were seeding or not so that there would be no bias in how they chose to fly the airplanes. If they did know, they might have taken difference flight patterns.</b>
+
+ 
  e. Unfortunately, we do not have the date of the weather event.  Why would it be helpful to have  this information?
+ 
+<b>The date of the weather event would be extremely useful because it would have helped us determine the weather on the day of the tests. If we knew the weather than we could have included that into our significance testing. For example, I assume that increased atmospheric humiditity would play a major roll in the success of seeding a cloud.</b>
+
 
 2. ANOVA
 
@@ -53,6 +148,12 @@ data <- data.frame(temp=temp, season=season)
 
 For the air temperature data, conduct an ANOVA and use the F-statistic to test the hypothesis that air temperature varies by season.
 
+```{r}
+summary(aov(temp~season, data=data))
+```
+
+<b>Our F stastistic for testing whether temperature varied between seasons was 158.7. Our null hypothesis would be that the mean temperature for each season would be equal while the alternative would be that they would differ. Because our F-stastistic is exceedingly large, then we can state that the variance of the data between groups (seasons) is large and significantly different. The probabiblity of finding data that is crazier than this is 2.34e-09 which is much smaller than 0.05.</b>
+
 3.  Spock Conspiracy Trial.
 
 This is another classic dataset. Dr. Benjamin Spock was a pediatrician who wrote a very popular book in 1948.  In 1968, Dr Spock was accused of conspiring to violate the Selective Services Act by helping young men to medically avoid the military draft during the Vietnam War.  His defence challeneged the case on the grounds that the jury did not contain a single woman, and therefore could not be random.
@@ -64,9 +165,42 @@ data(case0502)
 ```
 
  a. Qualitatively describe these data using boxplots and summary statistics.
+ 
+```{r}
+ggplot(case0502) + geom_boxplot(aes(x=Judge, y = Percent))
+case0502 %>% group_by(Judge) %>% summarize(m=mean(Percent), sd=sd(Percent), n = n())
+```
+
+<b> Here the boxplots show that the Percentages of females on the Jury of Judges A-F and Spock's are normally distributed. The means of the percentages decrease from Judge A through F and Spock has the lowest mean percentage. Judge A has the highest standard deviation while the other judges and Spocks have almost uniform standard deviations. </b>
+
+
  b. Using an ANOVA, test the hypothesis that all of the judges have the same jury compositions on average and report your results.
+ 
+```{r}
+summary(aov(Percent~Judge, data=case0502))
+```
+
+<b> The ANOVA testing the hypothesis that the judges have the same jury composition have the same jury composition show that there is signficant difference among the judges. From the ANOVA, it can't be said which Judge is significantly different though. We'll have to group Judges A-F to test whether Spock differs from them.</b> 
+
+
  c. Grouping together Judges A-F, perform a two-sample t-test to test the hypothesis that Spock's judge consistently chooses juries with lower than expected women.
+ 
+```{r}
+case0502$Judge2 <- ifelse(case0502$Judge == "Spock's", "Spock's", "Other")
+t.test(Percent~Judge2, data=case0502)
+```
+
+<b>After grouping the judges together and running a two-sample t-test, we found significant difference between the percentages of women in the other Judges than in Spock's. This is confirmed by the 95 percent CI not including 0.</b>
+ 
  d. Use another ANOVA to evaluate whether or not it was suitable to group together the other 6 judges.
+ 
+```{r}
+summary(aov(Percent~Judge2, data=case0502))
+ggplot(data=case0502) + geom_boxplot(aes(x=Judge2, y=Percent))
+```
+
+<b> The F-value found by testing the group of Judges to Spock was 32.15 with a p-value less than 0.05. This value shows that there is signficant difference between the two groups (Judges A-F and Spock). A boxplot visually shows the distribution of Spock's to the group "Other". I found that grouping the judges together was relevant to test Spock against all the other judges while maintaining normally distributed data. </b> 
+
  e. How should your interpretation of the results in part (c) change if you rejected the hypothesis the other six judges were not all statistically the same?
  
- 
+<b> If I rejected the hypothesis that the other six judges were not all statistically the same compared to Spock then I would have to state that Spock's jury contained stastisticially just as much females than the other Judges.</b>
