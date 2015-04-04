@@ -1,8 +1,8 @@
 ---
 title: "Homework 5"
-author: "Nicholas Nagle"
+author: "Kyle Landolt"
 date: "March 30, 2015"
-output: pdf_document
+output: html_document
 ---
 
 For this assigment you will use a dataset of housing prices in Boston.
@@ -30,9 +30,19 @@ Sorry it looks so bad printed out.  It's better on a big screen.
 library(ggplot2)
 library(GGally)
 library(dplyr)
-boston.c %>% mutate(logMEDV = log(CMEDV), logDIS=log(DIS)) %>% 
-  select(AGE, RM, logDIS, B, LSTAT, PTRATIO, NOX, logMEDV) %>% ggpairs()
+
 ```
+
+
+ - **AGE** a numeric vector of proportions of owner-occupied units built prior to 1940
+ - **RM** a numeric vector of average numbers of rooms per dwelling
+ - **logDIS** log(a numeric vector of weighted distances to five Boston employment centres)
+ - **B** a numeric vector of 1000*(Bk - 0.63)^2 where Bk is the proportion of blacks
+ - **LSTAT** a numeric vector of percentage values of lower status population
+ - **PRATIO** a numeric vector of pupil-teacher ratios per town (constant for all Boston tracts)
+ - **NOX** a numeric vector of nitric oxides concentration (parts per 10 million) per town
+ - **logMEDV** log(a numeric vector of median values of owner-occupied housing in USD 1000)
+
 
 We are trying to understand the various determinants of house price, including air pollution.
 One of the most important aspects of house price in the US is suburbanization.
@@ -52,13 +62,58 @@ ggplot(boston.c) + geom_point(aes(x=X, y=Y, color=log(DIS)))
 
 # Homework Assignment:
 1. Using the scatterplot matrix (`ggpairs`), 
+
+```{r}
+boston.c %>% mutate(logMEDV = log(CMEDV), logDIS=log(DIS)) %>% 
+  select(AGE, RM, logDIS, B, LSTAT, PTRATIO, NOX, logMEDV) %>% ggpairs()
+```
+
  a. Describe the correlates of house price.
+ 
+
+ 
  b. Describe the correlates of NOX.
-2. Imagine the multivariate regression of log(CMEDV) on NOX, AGE, log(DIS), RM, CRIM, PTRATIO, B, LSTAT, and CHAS.  DO NOT RUN THE REGRESSION YET.  For each of these variables, predict whether you think the regression coefficient will be positive or negative, and why.  Remember, the multivariate regression relationship is the relationship AFTER you hold the other values fixed.  So, for instance to think about the relationship between Distance and value, you should think like: "Imagine two houses that have the same age, same number of rooms, same racial and ethnic neighborhood, same tax rate, etc.  Now move one of those houses farther from workplaces.  Should that change increase or decrease housing value."  Answer: Economic theory suggest that everything else equal, being far from work is a bad thing.  Note, the Charles River is a particulurly industrial part of town.
+ 
+ 
+2. Imagine the multivariate regression of log(CMEDV) on NOX, AGE, log(DIS), RM, CRIM, PTRATIO, B, LSTAT, and CHAS.  DO NOT RUN THE REGRESSION YET.  For each of these variables, predict whether you think the regression coefficient will be positive or negative, and why.  *Remember, the multivariate regression relationship is the relationship AFTER you hold the other values fixed.*  So, for instance to think about the relationship between Distance and value, you should think like: "Imagine two houses that have the same age, same number of rooms, same racial and ethnic neighborhood, same tax rate, etc.  Now move one of those houses farther from workplaces.  Should that change increase or decrease housing value."  Answer: Economic theory suggest that everything else equal, being far from work is a bad thing.  Note, the Charles River is a particulurly industrial part of town.
+
+When running the multivariate regression on log(CMEDV), the I think that:
+
+ - **NOX** will have a negative regression coefficient because the more expensive the housing value is the less likely it will be in an area with harmful pollutants
+ - **AGE** will have a negative regression coffeificent because, disregarding gentrification, older homes will be less expensive
+ - **log(DIS)** will have a negative regression coefficient because, disregarding suburbinization, being away from the city center for work and entertainment will reduce the value of the home
+ - **RM** will have a positive regression coefficient because the more rooms there are per dwelling the higher value the house will be put at because of increased space/materials 
+ - **CRIM** will be expected to have a negative regression coefficient because the increased value of homes may lead to more economically stable families or increased policing and security
+ - **PTRATIO** will be expected to have a negative regression coefficient because the increased home value may lead to decreased density, reducing pupils, and decreasing the PTRATIO
+ - **B** will be expected to have a negative regression coefficient because the increased home value may lead to a decreased proportion of blacks due to economic disparity 
+ - **LSTAT** will be expected to have a negative regression coefficient because the increased home value will lead to a lower amount of the percentage of lower status populations
+ - **CHAS** will be expected to have a negative regression coefficient because the increased home value will likely be further away from the industrially heavy area of Charles River, having a value of 0 not bordering the river. 
+
+
 3. One of the relationships is a negative relationship between Distance from Work (primarily Boston) and House Value.  Fit a bivariate regression between log CMEDV and log DIS
+
+```{r}
+lm1 <- lm(log(CMEDV)~log(DIS), data=boston.c)
+summary(lm1)
+```
+
+
+
  a. Report the slope of this regression and interpret it's value.
+ 
+<b> The slope for this regression is 0.30706. #see class notes for interpretation of logs </b>
+
  b. Report approximate 95% confidence intervals for the slope.
+ 
+<b> The 95% confidence interval for the slope of this regression is `r 0.30706 - (0.03081*2)` and `r 0.30706 + (0.03081*2)`.
+
 4. Fit the linear regression from question 2.
+
+```{r}
+multilm <- lm(log(CMEDV) ~ NOX + AGE + log(DIS) + RM + CRIM + PTRATIO + B + LSTAT+ CHAS, data=boston.c)
+```
+
+
  a. Report the coefficient of log Distance.  Interpret it's value and report it's 95% confidence interval.  
  b. Explain why the coefficient on log Distance changed so dramatically from in question 3.
  c. Come to a conclusion regarding the relationship of air quality (measured by NOX).  Is there evidence that NOX has a relationship on house value?  Be sure to describe both the value of that relationship and the possible range of values.
