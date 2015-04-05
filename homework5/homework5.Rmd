@@ -15,15 +15,6 @@ library(spdep)
 data(boston)
 ```
 
-There is a codebook in the help file for this dataset
-```{r}
-help(boston)
-```
-
-```{r}
-head(boston.c)
-```
-
 Most of these variables were selected because Economic theory suggests that each should impact median value.  A scatterplot matrix is a helpful to quickly visualize many bivariate relations.  I like the scatterpot matrix function in the GGally package called `ggpairs`.
 Sorry it looks so bad printed out.  It's better on a big screen.
 ```{r, message=FALSE}
@@ -70,9 +61,27 @@ boston.c %>% mutate(logMEDV = log(CMEDV), logDIS=log(DIS)) %>%
 
  a. Describe the correlates of house price.
  
+The correlates of *house price* to the other factors are:
 
+ - **AGE** has a correlation value of -0.455
+ - **RM** has a positive correlation value 0.633
+ - **logDIS** has a positive correlation value of 0.406
+ - **B** has a positve correlation value of 0.405
+ - **LSTAT** has a strong correlation value of -0.809
+ - **PTRATIO** has a correlation value of -0.499
+ - **NOX** has a correlation value of -0.513
  
  b. Describe the correlates of NOX.
+ 
+The correlates of *NOX* to the other factors are:
+
+ - **AGE** has a correlation value of 0.731
+ - **RM** has a correlation value -0.302
+ - **logDIS** has a positive correlation value of -0.832
+ - **B** has a positve correlation value of -.38
+ - **LSTAT** has a strong correlation value of 0.591
+ - **PTRATIO** has a correlation value of 0.189
+ - **logCMEDV** has a correlation value of -0.513
  
  
 2. Imagine the multivariate regression of log(CMEDV) on NOX, AGE, log(DIS), RM, CRIM, PTRATIO, B, LSTAT, and CHAS.  DO NOT RUN THE REGRESSION YET.  For each of these variables, predict whether you think the regression coefficient will be positive or negative, and why.  *Remember, the multivariate regression relationship is the relationship AFTER you hold the other values fixed.*  So, for instance to think about the relationship between Distance and value, you should think like: "Imagine two houses that have the same age, same number of rooms, same racial and ethnic neighborhood, same tax rate, etc.  Now move one of those houses farther from workplaces.  Should that change increase or decrease housing value."  Answer: Economic theory suggest that everything else equal, being far from work is a bad thing.  Note, the Charles River is a particulurly industrial part of town.
@@ -115,6 +124,17 @@ multilm <- lm(log(CMEDV) ~ NOX + AGE + log(DIS) + RM + CRIM + PTRATIO + B + LSTA
 
 
  a. Report the coefficient of log Distance.  Interpret it's value and report it's 95% confidence interval.  
+ 
+The coefficient of log(DIS) is now -0.2499594. This means that as you increase distance by one percent, you *decrease* home value by 0.25. Essentially, the further away the house is from the city center, the less expensive it becomes. 
+
+The 95% confidence interval for log(DIS) is between `r -0.2499594 - (0.0322420*2)` and `r 0.2499594 + (0.0322420*2)`. 
+ 
  b. Explain why the coefficient on log Distance changed so dramatically from in question 3.
+ 
+The coefficient on log Distance from the multivariate regression (-0.2499594) changed so much from the bivariate regression coefficient (0.30706) because the multivariate regression accounted for and kept all the other factors (NOX, AGE, RM, CRIM, etc.) constant. If we just observed log distance to the median values of housing, the bivariate relationship couldn't control for any other factors. You also see a new phenomenon of suburbinization in the bivariate relationship where if you increase distance, you increase the value of the home. However, multivariate regression says that if you keep NOX, AGE, RM, CRIM, etc. constant, how will homes closer to the city center compare in price to homes further away from the city center? We see that if we increase distance in the multivariate regression, then home value will decrease.
+ 
  c. Come to a conclusion regarding the relationship of air quality (measured by NOX).  Is there evidence that NOX has a relationship on house value?  Be sure to describe both the value of that relationship and the possible range of values.
+
+
+ 
  
