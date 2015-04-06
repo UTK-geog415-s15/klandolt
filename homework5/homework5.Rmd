@@ -21,10 +21,9 @@ Sorry it looks so bad printed out.  It's better on a big screen.
 library(ggplot2)
 library(GGally)
 library(dplyr)
-
 ```
 
-
+Descriptions of the variables are:
  - **AGE** a numeric vector of proportions of owner-occupied units built prior to 1940
  - **RM** a numeric vector of average numbers of rooms per dwelling
  - **logDIS** log(a numeric vector of weighted distances to five Boston employment centres)
@@ -61,27 +60,27 @@ boston.c %>% mutate(logMEDV = log(CMEDV), logDIS=log(DIS)) %>%
 
  a. Describe the correlates of house price.
  
-The correlates of *house price* to the other factors are:
+The correlates of *house price* to the other factors, each in a bivariate relationship, are:
 
- - **AGE** has a correlation value of -0.455
- - **RM** has a positive correlation value 0.633
- - **logDIS** has a positive correlation value of 0.406
- - **B** has a positve correlation value of 0.405
- - **LSTAT** has a strong correlation value of -0.809
- - **PTRATIO** has a correlation value of -0.499
- - **NOX** has a correlation value of -0.513
+ - **AGE** has a correlation value of -0.455. This shows that as the age of the housing increases the house price decreases.
+ - **RM** has a positive correlation value 0.633. This shows that as the amount of rooms increases the price of the houses increases.
+ - **logDIS** has a positive correlation value of 0.406. This shows that the bivariate relationship that as distance increases the price of homes increase. This is probably related to surburbinization. 
+ - **B** has a positve correlation value of 0.405. This shows that as the price of homes increase, the proportion of black residents increase.
+ - **LSTAT** has a strong correlation value of -0.809. This relationship is straightforward and very strong. As the price of houses increase the amount of lower status population decreases.
+ - **PTRATIO** has a correlation value of -0.499. This shows that as the PTRATIO(the ratio of pupils:teachers) increases, the housing value decreases.
+ - **NOX** has a correlation value of -0.513. This shows that as the amount of NOX increases, the housing value decreases.
  
  b. Describe the correlates of NOX.
  
-The correlates of *NOX* to the other factors are:
+The correlates of *NOX* to the other factors, in a bivariate relationship, are:
 
- - **AGE** has a correlation value of 0.731
- - **RM** has a correlation value -0.302
- - **logDIS** has a positive correlation value of -0.832
- - **B** has a positve correlation value of -.38
- - **LSTAT** has a strong correlation value of 0.591
- - **PTRATIO** has a correlation value of 0.189
- - **logCMEDV** has a correlation value of -0.513
+ - **AGE** has a correlation value of 0.731. This shows that as the the age of the house increases the amount of NOX increases.
+ - **RM** has a correlation value -0.302. This shows that as the amount of rooms increase the amount of NOX decreases.
+ - **logDIS** has a positive correlation value of -0.832. This shows that as the distance from the downtown increases, the amount of NOX decreases.
+ - **B** has a positve correlation value of -.38. This relationship looks rather weak. As the proportion of black residents increase, the amount of NOX decreases.
+ - **LSTAT** has a strong correlation value of 0.591. This shows that as the amount of NOX increases, the amount of lower status residents increase as well.
+ - **PTRATIO** has a correlation value of 0.189. This shows that as the amount of NOX increases, the ratio of pupils:teachers increases.
+ - **logCMEDV** has a correlation value of -0.513. This shows that as the amount of NOX increases, the housing value decreases. 
  
  
 2. Imagine the multivariate regression of log(CMEDV) on NOX, AGE, log(DIS), RM, CRIM, PTRATIO, B, LSTAT, and CHAS.  DO NOT RUN THE REGRESSION YET.  For each of these variables, predict whether you think the regression coefficient will be positive or negative, and why.  *Remember, the multivariate regression relationship is the relationship AFTER you hold the other values fixed.*  So, for instance to think about the relationship between Distance and value, you should think like: "Imagine two houses that have the same age, same number of rooms, same racial and ethnic neighborhood, same tax rate, etc.  Now move one of those houses farther from workplaces.  Should that change increase or decrease housing value."  Answer: Economic theory suggest that everything else equal, being far from work is a bad thing.  Note, the Charles River is a particulurly industrial part of town.
@@ -110,16 +109,17 @@ summary(lm1)
 
  a. Report the slope of this regression and interpret it's value.
  
-<b> The slope for this regression is 0.30706. #see class notes for interpretation of logs </b>
+The slope for this regression is 0.30706. Because both CMEDV and DIS are logged, then it's interpreted that as CMEDV increases by 1%, then DIS will increase by 0.30706%.
 
  b. Report approximate 95% confidence intervals for the slope.
  
-<b> The 95% confidence interval for the slope of this regression is `r 0.30706 - (0.03081*2)` and `r 0.30706 + (0.03081*2)`.
+The 95% confidence interval for the slope of this regression is `r 0.30706 - (0.03081*2)` and `r 0.30706 + (0.03081*2)`.
 
 4. Fit the linear regression from question 2.
 
 ```{r}
 multilm <- lm(log(CMEDV) ~ NOX + AGE + log(DIS) + RM + CRIM + PTRATIO + B + LSTAT+ CHAS, data=boston.c)
+summary(multilm)
 ```
 
 
@@ -135,6 +135,6 @@ The coefficient on log Distance from the multivariate regression (-0.2499594) ch
  
  c. Come to a conclusion regarding the relationship of air quality (measured by NOX).  Is there evidence that NOX has a relationship on house value?  Be sure to describe both the value of that relationship and the possible range of values.
 
-
+While using multivariate regression to account for the other factors, the relationship of NOX to log(CMEDV) is -0.9250979 with a 95% confidence interval of `r -0.9250979 - (-0.9250979*2)` and `r -0.9250979 + (-0.9250979*2)`. Because we logged the y-value, we have to interpret the relationship as there is a 1 unit increase in NOX, there is a 92.5% (between `r 92.50979 - (92.50979*2)` and `r 92.50979 + (92.50979*2)`) *decrease* in the housing value. This relationship is significant as it has a t value of -6.546 and a Pr(>|t|) of 2e-16. I would say there is a very strong negative relationship between NOX and housing price.
  
  
