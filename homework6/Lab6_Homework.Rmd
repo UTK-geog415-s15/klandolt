@@ -23,9 +23,10 @@ ggpairs(Prestige %>% filter(!is.na(type)) %>% select(education, prestige, women,
 ```
 
 I started to analyze the relationship of income as a dependent factor by using the ggpairs function to quickly observe the bivariate relationship of income to the other independent factors. I note the following:
-1. If the solid, smoothed black line of income represents its distribution, then I notice that it seems to be positively skewed. 
-2. There doesn't seem to a good linear relationship of income to any covariates, although the correlation coefficient for income to prestige was fairly high at +0.703. Education has a relatively high correlation coefficient too at 0.574. It's also noted that income to women have a negative correlation coefficent, possibly showing that women are paid less.
-3. The relationships of income to education and prestige both appear exponential.
+
+ 1. If the solid, smoothed black line of income represents its distribution, then I notice that it seems to be positively skewed. 
+ 2. There doesn't seem to a good linear relationship of income to any covariates, although the correlation coefficient for income to prestige was fairly high at +0.703. Education has a relatively high correlation coefficient too at 0.574. It's also noted that income to women have a negative correlation coefficent, possibly showing that women are paid less.
+ 3. The relationships of income to education and prestige both appear exponential.
 
 
 I do not want to remove any covariates at the moment for risk of creating a confounding variable, so I will do a multivariate regression to see the results.
@@ -46,11 +47,15 @@ summary(reg1)
 crPlots(reg1)
 ```
 
-Transforming exp(educaitona) and exp(prestige) put the data into a nonsensical 
+The summary of this regression shows all the regressed independent variables as significant with women as the only negative coefficient. However, transforming education and prestige to exp(education) and exp(prestige) put the data into a nonsensical format. Looking at the component + residual plots, the exp(prestige) independent variable does not express the linear relationship so desired. I will now only log(income) and observe the results:
 
 ```{r}
 reg2 <- lm(log(income) ~ type + education + prestige + women, data=Prestige)
 summary(reg2)
 crPlots(reg2)
 ```
+
+
+
+
 
