@@ -55,7 +55,7 @@ summary(reg2)
 crPlots(reg2)
 ```
 
-
+After logging income, I see that there is significant relationships to the intercent
 
 
 
