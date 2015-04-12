@@ -20,19 +20,37 @@ data(Prestige)
 
 ```{r}
 ggpairs(Prestige %>% filter(!is.na(type)) %>% select(education, prestige, women, type, income))
-
-
 ```
 
+I started to analyze the relationship of income as a dependent factor by using the ggpairs function to quickly observe the bivariate relationship of income to the other independent factors. I note the following:
+1. If the solid, smoothed black line of income represents its distribution, then I notice that it seems to be positively skewed. 
+2. There doesn't seem to a good linear relationship of income to any covariates, although the correlation coefficient for income to prestige was fairly high at +0.703. Education has a relatively high correlation coefficient too at 0.574. It's also noted that income to women have a negative correlation coefficent, possibly showing that women are paid less.
+3. The relationships of income to education and prestige both appear exponential.
+
+
+I do not want to remove any covariates at the moment for risk of creating a confounding variable, so I will do a multivariate regression to see the results.
 ```{r}
 reg0 <- lm(income ~ type + education + prestige + women, data=Prestige)
 summary(reg0)
 ```
 
+The initial multivariate regression has prestige and women as significant relationships. I can check for lineary using the component + residual plots.
 ```{r}
 crPlots(reg0)
-
 ```
 
+After checking the plots I noticed that it's still clear that education and prestige have an exponential relationship. Because I don't want to transform my dependent variable first, I will first try to transform education and prestige to exp(education) and exp(prestige). I do this so I won't have to directly transform income in hopes of maintaning my significant relationship of income to women. 
+```{r}
+reg1 <- lm(income ~ type + exp(education) + exp(prestige) + women, data=Prestige)
+summary(reg1)
+crPlots(reg1)
+```
 
+Transforming exp(educaitona) and exp(prestige) put the data into a nonsensical 
+
+```{r}
+reg2 <- lm(log(income) ~ type + education + prestige + women, data=Prestige)
+summary(reg2)
+crPlots(reg2)
+```
 
