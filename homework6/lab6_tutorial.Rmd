@@ -8,6 +8,20 @@ output: pdf_document
 # Homework
 Your homework assignment is to analyze the prestige data, using "income" as the dependent variable.  That is, develop a regression model that helps to explain the income in an occupation, using any of the other data in the the Prestige data set as a potential predictor.  Describe your methodology from beginning to end.  I have done this using Prestige as the dependent variable, and you should follow along with that before continuing.
 
+```{r}
+library(spdep)
+library(dplyr)
+library(ggplot2)
+library(GGally)
+library(car)
+data(Prestige)
+
+
+
+```
+
+
+
 
 # Tutorial
 

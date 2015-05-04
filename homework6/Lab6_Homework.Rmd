@@ -1,0 +1,92 @@
+---
+title: "Lab 6 Income as Dependent"
+author: "Kyle Landolt"
+date: "April 11, 2015"
+output: html_document
+---
+
+
+# Homework
+Your homework assignment is to analyze the prestige data, using "income" as the dependent variable.  That is, develop a regression model that helps to explain the income in an occupation, using any of the other data in the the Prestige data set as a potential predictor.  Describe your methodology from beginning to end.  I have done this using Prestige as the dependent variable, and you should follow along with that before continuing.
+
+```{r}
+library(spdep)
+library(dplyr)
+library(ggplot2)
+library(GGally)
+library(car)
+data(Prestige)
+```
+
+```{r}
+ggpairs(Prestige %>% filter(!is.na(type)) %>% select(education, prestige, women, type, income))
+```
+
+I started to analyze the relationship of income as a dependent factor by using the ggpairs function to quickly observe the bivariate relationship of income to the other independent factors. I note the following:
+
+ 1. If the solid, smoothed black line of income represents its distribution, then I notice that it seems to be positively skewed. 
+ 2. There doesn't seem to a good linear relationship of income to any covariates, although the correlation coefficient for income to prestige was fairly high at +0.703. Education has a relatively high correlation coefficient too at 0.574. It's also noted that income to women have a negative correlation coefficent, possibly showing that women are paid less than males.
+ 3. The relationships of income to education and prestige both appear exponential.
+
+
+I do not want to remove any covariates at the moment for risk of creating a confounding variable, so I will do a multivariate regression to see the results.
+```{r}
+reg0 <- lm(income ~ type + education + prestige + women, data=Prestige)
+summary(reg0)
+```
+
+The initial multivariate regression has prestige and women as significant relationships. I can check for lineary using the component + residual plots.
+```{r}
+crPlots(reg0)
+```
+
+After checking the plots I noticed that it's still clear that education and prestige have an exponential relationship. Because I don't want to transform my dependent variable first, I will first try to transform education and prestige to exp(education) and exp(prestige). I do this so I won't have to directly transform income in hopes of maintaning my significant relationship of income to women. 
+```{r}
+reg1 <- lm(income ~ type + exp(education) + exp(prestige) + women, data=Prestige)
+summary(reg1)
+crPlots(reg1)
+```
+
+The summary of this regression shows all the regressed independent variables as significant with women as the only negative coefficient. Looking at the component + residual plots, the exp(prestige) independent variable does not express the linear relationship so desired. The Adjusted R^2 value is also only 0.6521.  I will now only log(income) and observe the results:
+
+```{r}
+reg2 <- lm(log(income) ~ type + education + prestige + women, data=Prestige)
+summary(reg2)
+crPlots(reg2)
+```
+
+Because we logged the dependent variable, income, now the regression is interpreted as 1 unit change in x is now 100 $beta$ % change in y. 
+
+After logging income, I see that there are significant relationships with prestige and women and the R^2 value has become 0.7842. The component residual lines are more satisfactory, although I'm still not completely happy with education because of the inconsistency towards the right tail.
+
+I would to now see with the reg2 model how education will change according to a prediction of log(income) holding the values of prestige and women at a constant.
+```{r}
+# First, copy the data, but then fix eduation and income to set values
+pred.data <- Prestige %>% mutate(prestige=50, women=60)
+# Now, do the predictions
+pred.data$income.predict2 <- predict(reg2, newdata = pred.data)
+# And plot
+ggplot(pred.data) + geom_point(aes(x=education, y=income.predict2, color=type))+
+  labs(title = "Prediction with log(income) = a + b education" )
+```
+
+You can clearly see how education and the predicted log income relates to types. However, I will now try to run a linear regression excluding education to see how that will affect the adjusted R^2 value.
+```{r}
+reg3 <- lm(log(income) ~ type + prestige + women, data=Prestige)
+summary(reg3)
+```
+
+I see now that my adjusted R^2 value increased from 0.7842 to 0.7863. This in interesting in terms of model simplification. I would like to run an ANOVA between the linear model with education and the new linear model without education to see if there is a signficiant difference between the two.
+
+```{r}
+anova(reg2, reg3)
+```
+
+After running the ANOVA I notice that there is no significant difference between the two models as the Pr(>F) is greater than 0.05. Because of this, I choose not to drop education.
+
+One last analysis I would like to see is the redidual plots of my finale regression model explaining log(income) as the dependent variable.
+```{r}
+residualPlots(reg2)
+```
+
+I see that the residual plots for my regression are very linear and I'm satisfied with the outcome of my model. I choose to not do any further analysis based on these findings.
